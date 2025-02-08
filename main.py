@@ -35,10 +35,13 @@ class Form(StatesGroup):
 # Обрабатываем команду /mute // Замутить
 @dp.message(F.text.startswith("/mute"))
 async def cmd_mute(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
-        await message.answer("Использование: /mute ник")
+        await message.answer("Использование: /mute @username")
         return
 
     username = args[1].lstrip('@')
@@ -52,6 +55,9 @@ async def cmd_mute(message: Message):
 # Обрабатываем команду /unmute // Размутить
 @dp.message(F.text.startswith("/unmute"))
 async def cmd_mute(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
@@ -69,6 +75,9 @@ async def cmd_mute(message: Message):
 # Обрабатываем команду /ban // Забанить
 @dp.message(F.text.startswith("/ban"))
 async def cmd_ban(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
@@ -86,6 +95,9 @@ async def cmd_ban(message: Message):
 # Обрабатываем команду /unban // Разбанить
 @dp.message(F.text.startswith("/unban"))
 async def cmd_ban(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
@@ -103,6 +115,9 @@ async def cmd_ban(message: Message):
 # Обрабатываем команду /warn // Выдать варн
 @dp.message(F.text.startswith("/warn"))
 async def cmd_ban(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
@@ -120,6 +135,9 @@ async def cmd_ban(message: Message):
 # Обрабатываем команду /unwarn // Снять варн
 @dp.message(F.text.startswith("/unwarn"))
 async def cmd_ban(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        await message.answer("Вы не имеете права использовать эту команду.")
+        return
     args = message.text.split(maxsplit=1)
 
     if len(args) < 2:
