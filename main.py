@@ -9,7 +9,7 @@ from aiogram.fsm.state import State, StatesGroup
 from keyboards.keyboards_users import index_keyboard
 from config import *
 from utils import create_database, create_log_folder, write_to_log
-from db import accept_rules_db, add_user, get_user, increment_message_count, muted_users
+from db import accept_rules_db, add_user, get_user, increment_message_count, muted_users, unmuted_users, banned_users, unbanned_users, warnned_users, unwarnned_users
 import asyncio
 import logging
 import sys
@@ -42,6 +42,99 @@ class Form(StatesGroup):
     accept_rules = State()
 
 
+@dp.message(F.text.startswith("/mute"))
+async def cmd_mute(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /mute ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, Вы получили мут!")
+    muted_users(username)
+    logging.info(f"Администратор @{message.from_user.username} выдал мут пользователю @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} выдал мут пользователю @{username}.", folder=LOG_FOLDER)
+
+
+@dp.message(F.text.startswith("/unmute"))
+async def cmd_mute(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /unmute ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, с Вас сняли мут.")
+    unmuted_users(username)
+    logging.info(f"Администратор @{message.from_user.username} снял мут пользователю @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} снял мут пользователю @{username}.", folder=LOG_FOLDER)
+
+
+@dp.message(F.text.startswith("/ban"))
+async def cmd_ban(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /ban ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, Вы забанены!")
+    banned_users(username)
+    logging.info(f"Администратор @{message.from_user.username} забанил пользователя @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} забанил пользователя @{username}.", folder=LOG_FOLDER)
+
+@dp.message(F.text.startswith("/unban"))
+async def cmd_ban(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /unban ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, Вы разбанены.")
+    unbanned_users(username)
+    logging.info(f"Администратор @{message.from_user.username} разбанил пользователя @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} разбанил пользователя @{username}.", folder=LOG_FOLDER)
+
+@dp.message(F.text.startswith("/warn"))
+async def cmd_ban(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /warn ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, Вам дали варн!")
+    warnned_users(username)
+    logging.info(f"Администратор @{message.from_user.username} выдал варн пользователю @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} выдал варн пользователю @{username}.", folder=LOG_FOLDER)
+
+@dp.message(F.text.startswith("/unwarn"))
+async def cmd_ban(message: Message):
+    args = message.text.split(maxsplit=1)
+
+    if len(args) < 2:
+        await message.answer("Использование: /unwarn ник")
+        return
+
+    username = args[1].lstrip('@')
+
+    await message.answer(f"{username}, с вас сняли варн")
+    unwarnned_users(username)
+    logging.info(f"Администратор @{message.from_user.username} снял варн с пользователя @{username}.")
+    write_to_log(message=f"Администратор @{message.from_user.username} снял варн с пользователя @{username}.", folder=LOG_FOLDER)
+
+
 # Команда /start
 @dp.message(F.text)
 async def cmd_start(message: types.Message):
@@ -53,13 +146,16 @@ async def cmd_start(message: types.Message):
     if user is not None:
         # Проверяем, заблокирован ли пользователь
         if user[7] == "YES":
-            await message.answer("Вы заблокированы!")
+            await message.delete()
+            await message.answer(f"@{username}, Вы заблокированы!")
             return  # Прекращаем выполнение функции
         if user[8] == "YES":
-            await message.answer("У вас мут!")
+            await message.delete()
+            await message.answer(f"@{username}, У вас мут!")
             return  # Прекращаем выполнение функции
         # Проверяем, принял ли пользователь правила
         if user[6] == "NO":
+            await message.delete()
             await message.answer(
                 "Добро пожаловать! Для доступа к чату нажмите на кнопку ниже, чтобы принять правила.",
                 reply_markup=index_keyboard()
@@ -68,29 +164,14 @@ async def cmd_start(message: types.Message):
     # Если пользователь не найден в базе данных
     if user is None:
         add_user(user_id, username)  # Добавляем пользователя в базу данных
+        await message.delete()
         await message.answer(
             "Добро пожаловать! Для доступа к чату нажмите на кнопку ниже, чтобы принять правила.",
             reply_markup=index_keyboard()
         )
 
 
-    if F.text.startswith == "/mute":
-        # Извлекаем текст после команды /mute
-        args = message.text.split(maxsplit=1)
 
-        # Проверяем, передан ли аргумент (ник пользователя)
-        if len(args) < 2:
-            await message.answer("Использование: /mute <ник>")
-            return
-
-        # Извлекаем ник пользователя
-        username = args[1]
-
-        # Отправляем сообщение
-        await message.answer(f"{username}, Вы получили мут!")
-        muted_users(user_id)
-        logging.info(f"Администратор {message.from_user.username} выдал мут пользователю {username}.")
-        write_to_log(message=f"Администратор @{message.from_user.username} выдал мут пользователю {username}.", folder=LOG_FOLDER)
 
 
 @dp.callback_query(F.data == "accept_rules")

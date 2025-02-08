@@ -64,8 +64,38 @@ def increment_message_count(user_id):
     conn.commit()
 
 
-def muted_users(user_id):
+def muted_users(username):
     conn = sqlite3.connect("db.db")
     cursor = conn.cursor()
-    cursor.execute("""UPDATE users SET muted = "YES" WHERE user_id = ?""", (user_id,))
+    cursor.execute("""UPDATE users SET muted = "YES" WHERE username = ?""", (username,))
+    conn.commit()
+
+def unmuted_users(username):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET muted = "NO" WHERE username = ?""", (username,))
+    conn.commit()
+
+def banned_users(username):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET blocked = "YES" WHERE username = ?""", (username,))
+    conn.commit()
+
+def unbanned_users(username):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET blocked = "NO" WHERE username = ?""", (username,))
+    conn.commit()
+
+def warnned_users(username):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET warns = warns + 1 WHERE username = ?""", (username,))
+    conn.commit()
+
+def unwarnned_users(username):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET warns = warns - 1 WHERE username = ?""", (username,))
     conn.commit()
