@@ -62,3 +62,10 @@ def increment_message_count(user_id):
     cursor = conn.cursor()
     cursor.execute('UPDATE users SET message_count = message_count + 1 WHERE user_id = ?', (user_id,))
     conn.commit()
+
+
+def muted_users(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET muted = "YES" WHERE user_id = ?""", (user_id,))
+    conn.commit()

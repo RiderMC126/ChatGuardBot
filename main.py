@@ -9,7 +9,7 @@ from aiogram.fsm.state import State, StatesGroup
 from keyboards.keyboards_users import index_keyboard
 from config import *
 from utils import create_database, create_log_folder, write_to_log
-from db import accept_rules_db, add_user, get_user, increment_message_count
+from db import accept_rules_db, add_user, get_user, increment_message_count, muted_users
 import asyncio
 import logging
 import sys
@@ -52,18 +52,19 @@ async def cmd_start(message: types.Message):
     # Если пользователь найден в базе данных
     if user is not None:
         # Проверяем, заблокирован ли пользователь
-        if user[5] == "YES":
-            await message.answer("Вы заблокированы")
+        if user[7] == "YES":
+            await message.answer("Вы заблокированы!")
             return  # Прекращаем выполнение функции
-
+        if user[8] == "YES":
+            await message.answer("У вас мут!")
+            return  # Прекращаем выполнение функции
         # Проверяем, принял ли пользователь правила
-        if user[4] == "NO":
+        if user[6] == "NO":
             await message.answer(
                 "Добро пожаловать! Для доступа к чату нажмите на кнопку ниже, чтобы принять правила.",
                 reply_markup=index_keyboard()
             )
             return  # Прекращаем выполнение функции
-
     # Если пользователь не найден в базе данных
     if user is None:
         add_user(user_id, username)  # Добавляем пользователя в базу данных
@@ -87,9 +88,9 @@ async def cmd_start(message: types.Message):
 
         # Отправляем сообщение
         await message.answer(f"{username}, Вы получили мут!")
+        muted_users(user_id)
         logging.info(f"Администратор {message.from_user.username} выдал мут пользователю {username}.")
         write_to_log(message=f"Администратор @{message.from_user.username} выдал мут пользователю {username}.", folder=LOG_FOLDER)
-    # await bot.send_message(message.chat.id, text=f'Привет!!!!!')
 
 
 @dp.callback_query(F.data == "accept_rules")
