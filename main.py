@@ -13,15 +13,6 @@ from db import accept_rules_db, add_user, get_user, increment_message_count, mut
 import asyncio
 import logging
 import sys
-import sqlite3
-import time
-import datetime
-import threading
-import random
-import string
-import os
-import json
-import re
 
 
 bot = Bot(TOKEN)
