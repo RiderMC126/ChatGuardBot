@@ -99,3 +99,15 @@ def unwarnned_users(username):
     cursor = conn.cursor()
     cursor.execute("""UPDATE users SET warns = warns - 1 WHERE username = ?""", (username,))
     conn.commit()
+
+def new_visitor(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET rank = "Посетитель" WHERE user_id = ?""", (user_id,))
+    conn.commit()
+
+def new_member(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET rank = "Участник" WHERE user_id = ?""", (user_id,))
+    conn.commit()
