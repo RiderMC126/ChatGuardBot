@@ -111,3 +111,21 @@ def new_member(user_id):
     cursor = conn.cursor()
     cursor.execute("""UPDATE users SET rank = "Участник" WHERE user_id = ?""", (user_id,))
     conn.commit()
+
+def new_communicator(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET rank = "Коммуникатор" WHERE user_id = ?""", (user_id,))
+    conn.commit()
+
+def new_discussionleader(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET rank = "Лидер Обсуждений" WHERE user_id = ?""", (user_id,))
+    conn.commit()
+
+def new_chatstar(user_id):
+    conn = sqlite3.connect("db.db")
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE users SET rank = "Звезда Чата" WHERE user_id = ?""", (user_id,))
+    conn.commit()

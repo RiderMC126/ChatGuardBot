@@ -9,7 +9,7 @@ from aiogram.fsm.state import State, StatesGroup
 from keyboards.keyboards_users import index_keyboard
 from config import *
 from utils import create_database, create_log_folder, write_to_log
-from db import accept_rules_db, add_user, get_user, increment_message_count, muted_users, unmuted_users, banned_users, unbanned_users, warnned_users, unwarnned_users, new_visitor, new_member
+from db import accept_rules_db, add_user, get_user, increment_message_count, muted_users, unmuted_users, banned_users, unbanned_users, warnned_users, unwarnned_users, new_visitor, new_member, new_communicator, new_discussionleader, new_chatstar
 from datetime import datetime
 import asyncio
 import logging
@@ -207,6 +207,15 @@ async def cmd_start(message: types.Message):
         if user[5] == 199:
             await message.answer(f'{username}, поздравляем Вас, вы достигли ранга: "Участник"!')
             new_member(user_id)
+        if user[5] == 499:
+            await message.answer(f'{username}, поздравляем Вас, вы достигли ранга: "Коммуникатор"!')
+            new_communicator(user_id)
+        if user[5] == 999:
+            await message.answer(f'{username}, поздравляем Вас, вы достигли ранга: "Лидер Обсуждений"!')
+            new_discussionleader(user_id)
+        if user[5] == 1999:
+            await message.answer(f'{username}, поздравляем Вас, вы достигли ранга: "Звезда Чата"!')
+            new_chatstar(user_id)
     # Если пользователь не найден в базе данных
     if user is None:
         add_user(user_id, username)  # Добавляем пользователя в базу данных
