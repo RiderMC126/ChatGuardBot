@@ -24,7 +24,6 @@ create_database()
 create_log_folder('logs')
 
 
-
 event_log = []
 user_ranks = {}
 
@@ -33,6 +32,7 @@ class Form(StatesGroup):
     accept_rules = State()
 
 
+# Обрабатываем команду /mute // Замутить
 @dp.message(F.text.startswith("/mute"))
 async def cmd_mute(message: Message):
     args = message.text.split(maxsplit=1)
@@ -49,6 +49,7 @@ async def cmd_mute(message: Message):
     write_to_log(message=f"Администратор @{message.from_user.username} выдал мут пользователю @{username}.", folder=LOG_FOLDER)
 
 
+# Обрабатываем команду /unmute // Размутить
 @dp.message(F.text.startswith("/unmute"))
 async def cmd_mute(message: Message):
     args = message.text.split(maxsplit=1)
@@ -65,6 +66,7 @@ async def cmd_mute(message: Message):
     write_to_log(message=f"Администратор @{message.from_user.username} снял мут пользователю @{username}.", folder=LOG_FOLDER)
 
 
+# Обрабатываем команду /ban // Забанить
 @dp.message(F.text.startswith("/ban"))
 async def cmd_ban(message: Message):
     args = message.text.split(maxsplit=1)
@@ -80,6 +82,8 @@ async def cmd_ban(message: Message):
     logging.info(f"Администратор @{message.from_user.username} забанил пользователя @{username}.")
     write_to_log(message=f"Администратор @{message.from_user.username} забанил пользователя @{username}.", folder=LOG_FOLDER)
 
+
+# Обрабатываем команду /unban // Разбанить
 @dp.message(F.text.startswith("/unban"))
 async def cmd_ban(message: Message):
     args = message.text.split(maxsplit=1)
@@ -95,6 +99,8 @@ async def cmd_ban(message: Message):
     logging.info(f"Администратор @{message.from_user.username} разбанил пользователя @{username}.")
     write_to_log(message=f"Администратор @{message.from_user.username} разбанил пользователя @{username}.", folder=LOG_FOLDER)
 
+
+# Обрабатываем команду /warn // Выдать варн
 @dp.message(F.text.startswith("/warn"))
 async def cmd_ban(message: Message):
     args = message.text.split(maxsplit=1)
@@ -110,6 +116,8 @@ async def cmd_ban(message: Message):
     logging.info(f"Администратор @{message.from_user.username} выдал варн пользователю @{username}.")
     write_to_log(message=f"Администратор @{message.from_user.username} выдал варн пользователю @{username}.", folder=LOG_FOLDER)
 
+
+# Обрабатываем команду /unwarn // Снять варн
 @dp.message(F.text.startswith("/unwarn"))
 async def cmd_ban(message: Message):
     args = message.text.split(maxsplit=1)
@@ -126,7 +134,7 @@ async def cmd_ban(message: Message):
     write_to_log(message=f"Администратор @{message.from_user.username} снял варн с пользователя @{username}.", folder=LOG_FOLDER)
 
 
-# Команда /start
+# Обрабатываем все сообщения пользователей
 @dp.message(F.text)
 async def cmd_start(message: types.Message):
     username = message.from_user.username
@@ -162,9 +170,7 @@ async def cmd_start(message: types.Message):
         )
 
 
-
-
-
+# Обрабатываем принятие правил
 @dp.callback_query(F.data == "accept_rules")
 async def accept_rules(call: types.CallbackQuery):
     user_id = call.from_user.id
@@ -174,11 +180,6 @@ async def accept_rules(call: types.CallbackQuery):
     await call.message.delete()
     write_to_log(message=f"Пользователь @{username} принял правила", folder=LOG_FOLDER)
 
-
-# Команда /mute
-@dp.message(F.text.startswith("/mute"))
-async def cmd_mute(message: Message):
-    await bot.send_message(message.chat.id, text=f"Йоу")
 
 
 
